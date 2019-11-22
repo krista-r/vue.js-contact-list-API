@@ -1,0 +1,23 @@
+.tabs{
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+span{
+    text-transform: uppercase;
+}
+
+.userLink{
+    display: block;
+    border: none;
+    text-decoration: underline;
+    outline: 0;
+}
+
+.personalDetails{
+    display: block;
+    background-color: grey;
+    float: right;
+    height: auto;
+    width: auto;
+}

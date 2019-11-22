@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Eurail Assignment</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <div id="app">
+        <section>
+            <button class="tabs" type="button" v-for="letter in tabs" v-on:click="showUsersInThisTab(letter)">{{ letter }}</button>    
+        </section>
+        <section>
+            <button class="userLink" v-for="person in filteredUsers" v-on:click="showUserData(person)">
+                {{ person.name.last + ', ' + person.name.first }}
+            </button>
+            <div v-if="selectedUser">
+                <button v-on:click="showUserData(null)">X</button>
+                <p><strong>First Name:</strong> {{selectedUser.name.first}}</p>
+                <p><strong>Last Name:</strong> {{selectedUser.name.last}}</p>
+                <p><strong>Email:</strong> {{selectedUser.email}}</p>
+                <p><strong>Phone:</strong> {{selectedUser.phone}}</p>
+                <p><strong>Address:</strong> {{selectedUser.location.street.name + ' ' + selectedUser.location.street.number}}</p>
+                <p><strong>City:</strong> {{selectedUser.location.city}}</p>
+                <p><strong>Province:</strong> {{selectedUser.location.state}}</p>
+                <p><strong>Postcode:</strong> {{selectedUser.location.postcode}}</p>
+                <img v-bind:src="selectedUser.picture.thumbnail"/>
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        var app = new Vue({
+                el: '#app',
+                data: {
+                    filteredUsers: [],
+                    selectedUser: null,
+                    userDictionary: [],
+                    tabs: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+                },
+                methods: {
+                    populateUserDictionary: function(users) {
+                        this.tabs.forEach(letter => {
+                            this.userDictionary[letter] = this.getUsersByLetter(users, letter);
+                        });
+
+                        console.log(this.userDictionary);
+                    },
+                    sortByLastName: function(user1, user2) {
+                        return user1.name.last.localeCompare(user2.name.last);
+                    },
+                    getUsersByLetter: function(users, letter) {
+                        var filteredUsers = [];
+
+                        for (i = 0; i < users.length; i++) {
+                            if (users[i].name.last.charAt(0) === letter) {
+                                filteredUsers.push(users[i]);
+                            }
+                        }
+
+                        return filteredUsers;
+                    },
+                    showUsersInThisTab: function(letter){
+                        this.filteredUsers = this.userDictionary[letter];
+                    },
+                    showUserData(person){
+                        console.log('people in this list', person);
+                        this.selectedUser = person;
+                    }
+                },
+                mounted() {
+                    axios.get('https://randomuser.me/api/?results=150&nat=nl')
+                    .then(
+                        //response => (this.users = response.data.results.sort(this.sortByLastName))
+                        response => this.populateUserDictionary(response.data.results.sort(this.sortByLastName))
+                    );
+                }
+            });
+    </script>
+</body>
+</html>
